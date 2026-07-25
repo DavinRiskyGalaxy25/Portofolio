@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davin Scientist | Organisasi</title>
+    <link rel="stylesheet" href="asset/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body data-page="organization">
+    <div id="loader"><span class="loader-line">$ booting</span></div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-head">
+            <span class="prompt">davin@portfolio</span><span class="prompt-path">:~$</span>
+            <span class="logo-name">Davin.<span style="color:var(--accent)">Sci</span></span>
+        </div>
+        <nav class="filetree">
+            <a href="index.html" data-page="home" class="file"><i class="fas fa-terminal"></i> home.sh</a>
+            <a href="about.html" data-page="about" class="file"><i class="fas fa-file-alt"></i> about.md</a>
+            <a href="skills.html" data-page="skills" class="file"><i class="fas fa-code"></i> skills.json</a>
+            <a href="projects.html" data-page="projects" class="file"><i class="fas fa-folder"></i> projects/</a>
+            <a href="experience.html" data-page="experience" class="file"><i class="fas fa-file-lines"></i> experience.log</a>
+            <a href="organization.html" data-page="organization" class="file"><i class="fas fa-file-lines"></i> organization.log</a>
+            <a href="education.html" data-page="education" class="file"><i class="fas fa-file-lines"></i> education.log</a>
+            <a href="contact.html" data-page="contact" class="file"><i class="fas fa-terminal"></i> contact.sh</a>
+        </nav>
+        <div class="sidebar-foot"><span class="status-dot"></span> online</div>
+    </aside>
+
+    <div class="topbar">
+        <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+        <span class="breadcrumb">~/<span class="current"></span></span>
+    </div>
+
+    <div class="shell">
+        <main class="content">
+
+            <div class="page-head">
+                <span class="eyebrow">$ cat organization.log</span>
+                <h1>Organisasi</h1>
+                <p>Silakan tambahkan pengalaman organisasi Anda.</p>
+            </div>
+
+            <div class="section-action">
+                <button class="btn" id="addOrganization"><i class="fas fa-plus"></i> Tambah</button>
+            </div>
+
+            <div id="organizationContainer" class="timeline"></div>
+
+            <footer class="page-footer">
+                <span>© 2026 Davin Scientist. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <button id="topButton"><i class="fas fa-arrow-up"></i></button>
+
+
+    <div class="modal" id="projectModal">
+        <div class="modal-box">
+            <span class="close" id="closeProject">&times;</span>
+            <h2>Tambah Project</h2>
+            <input type="text" id="projectTitle" placeholder="Judul Project">
+            <textarea id="projectDesc" placeholder="Deskripsi Project"></textarea>
+            <input type="url" id="projectGithub" placeholder="Link Github">
+            <input type="file" id="projectImage" accept="image/*">
+            <button class="btn" id="saveProject">Simpan</button>
+        </div>
+    </div>
+
+    <div class="modal" id="experienceModal">
+        <div class="modal-box">
+            <span class="close" id="closeExperience">&times;</span>
+            <h2>Tambah Pengalaman PKL</h2>
+            <input type="text" id="expCompany" placeholder="Nama Perusahaan">
+            <input type="text" id="expPosition" placeholder="Posisi">
+            <input type="text" id="expYear" placeholder="Tahun">
+            <textarea id="expDesc" placeholder="Deskripsi"></textarea>
+            <button class="btn" id="saveExperience">Simpan</button>
+        </div>
+    </div>
+
+    <div class="modal" id="organizationModal">
+        <div class="modal-box">
+            <span class="close" id="closeOrganization">&times;</span>
+            <h2>Tambah Organisasi</h2>
+            <input type="text" id="orgName" placeholder="Nama Organisasi">
+            <input type="text" id="orgPosition" placeholder="Jabatan">
+            <input type="text" id="orgYear" placeholder="Periode">
+            <textarea id="orgDesc" placeholder="Deskripsi"></textarea>
+            <button class="btn" id="saveOrganization">Simpan</button>
+        </div>
+    </div>
+
+    <div class="modal" id="educationModal">
+        <div class="modal-box">
+            <span class="close" id="closeEducation">&times;</span>
+            <h2>Tambah Pendidikan</h2>
+            <input type="text" id="eduSchool" placeholder="Nama Sekolah">
+            <input type="text" id="eduMajor" placeholder="Jurusan">
+            <input type="text" id="eduYear" placeholder="Tahun">
+            <button class="btn" id="saveEducation">Simpan</button>
+        </div>
+    </div>
+
+    <script src="asset/script.js"></script>
+</body>
+
+</html>
