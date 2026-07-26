@@ -1,480 +1,572 @@
-/*=============================
-    LOADER
-=============================*/
-window.addEventListener("load", () => {
-    const loader = document.getElementById("loader");
-    if (loader) {
-        setTimeout(() => {
-            loader.style.opacity = "0";
-            loader.style.visibility = "hidden";
-        }, 500);
+/*=========================================================================
+    DAVIN.SCI — PORTFOLIO SCRIPT
+    Vanilla JS + GSAP / ScrollTrigger. Every effect below degrades safely:
+    if GSAP fails to load or the user prefers reduced motion, content
+    still renders and stays fully usable — only the motion is skipped.
+=========================================================================*/
+(() => {
+    "use strict";
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isFinePointer = window.matchMedia("(pointer: fine)").matches;
+    const gsapReady = typeof window.gsap !== "undefined";
+
+    if (gsapReady && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
     }
-});
 
-/*=============================
-    SIDEBAR ACTIVE STATE + BREADCRUMB
-    (based on data-page set on <body>)
-=============================*/
-const currentPage = document.body.dataset.page || "home";
-const fileLinks = document.querySelectorAll(".filetree .file");
-fileLinks.forEach(link => {
-    link.classList.toggle("active", link.dataset.page === currentPage);
-});
-
-const breadcrumbCurrent = document.querySelector(".breadcrumb .current");
-if (breadcrumbCurrent) {
-    const active = document.querySelector(".filetree .file.active");
-    if (active) {
-        breadcrumbCurrent.textContent = active.textContent.trim();
-    }
-}
-
-/*=============================
-    MOBILE SIDEBAR (hamburger)
-=============================*/
-const hamburger = document.getElementById("hamburger");
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-
-function closeSidebar() {
-    sidebar.classList.remove("show");
-    overlay.classList.remove("show");
-}
-
-if (hamburger && sidebar && overlay) {
-    hamburger.onclick = () => {
-        sidebar.classList.toggle("show");
-        overlay.classList.toggle("show");
-    };
-    overlay.onclick = closeSidebar;
-    document.querySelectorAll(".filetree .file").forEach(link => {
-        link.addEventListener("click", closeSidebar);
-    });
-}
-
-/*=============================
-    TYPING TEXT (home only)
-=============================*/
-const typing = document.getElementById("typing");
-if (typing) {
-    const text = ["Web Developer", "Fullstack Developer", "UI Designer", "Cyber Security Enthusiast"];
-    let word = 0,
-        char = 0,
-        hapus = false;
-
-    function ketik() {
-        const current = text[word];
-        if (!hapus) {
-            typing.textContent = current.substring(0, char++);
-            if (char > current.length) {
-                hapus = true;
-                setTimeout(ketik, 1500);
-                return;
+    /*=============================
+        UTIL — rAF throttle
+    =============================*/
+    function rafThrottle(fn) {
+        let ticking = false;
+        return function (e) {
+            if (!ticking) {
+                ticking = true;
+                requestAnimationFrame(() => {
+                    fn(e);
+                    ticking = false;
+                });
             }
-        } else {
-            typing.textContent = current.substring(0, char--);
-            if (char < 0) {
-                hapus = false;
-                word++;
-                if (word >= text.length) word = 0;
-            }
-        }
-        setTimeout(ketik, hapus ? 60 : 120);
-    }
-    ketik();
-}
-
-/*=============================
-    BACK TO TOP
-=============================*/
-const topButton = document.getElementById("topButton");
-if (topButton) {
-    window.addEventListener("scroll", () => {
-        topButton.style.display = window.scrollY > 300 ? "flex" : "none";
-    });
-    topButton.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-/*=============================
-    PROFILE PHOTO (home only)
-=============================*/
-const profileInput = document.getElementById("profileInput");
-const uploadProfile = document.getElementById("uploadProfile");
-const deleteProfile = document.getElementById("deleteProfile");
-const profilePreview = document.getElementById("profilePreview");
-
-const savedPhoto = localStorage.getItem("profilePhoto");
-if (savedPhoto && profilePreview) {
-    profilePreview.src = savedPhoto;
-}
-
-if (uploadProfile) {
-    uploadProfile.onclick = () => profileInput.click();
-}
-
-if (profileInput) {
-    profileInput.addEventListener("change", () => {
-        const file = profileInput.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            profilePreview.src = e.target.result;
-            localStorage.setItem("profilePhoto", e.target.result);
         };
-        reader.readAsDataURL(file);
-    });
-}
+    }
 
-if (deleteProfile) {
-    deleteProfile.onclick = () => {
-        localStorage.removeItem("profilePhoto");
-        profilePreview.src = "asset/profile/default.png";
-    };
-}
+    /*=============================
+        PRELOADER
+    =============================*/
+    const loader = document.getElementById("loader");
+    const loaderProgress = document.getElementById("loaderProgress");
+    const loaderLine = document.getElementById("loaderLine");
 
-/*=============================
-    SCROLL REVEAL
-=============================*/
-function reveal() {
-    const item = document.querySelectorAll(".about-card,.skill-card,.project-card,.timeline-item");
-    item.forEach(card => {
-        const top = card.getBoundingClientRect().top;
-        const visible = window.innerHeight - 100;
-        if (top < visible) card.classList.add("show");
-    });
-}
-window.addEventListener("scroll", reveal);
-reveal();
+    function runLoaderCosmetics() {
+        const messages = ["booting_system", "compiling_ui", "davin.sci ready"];
+        let step = 0;
+        if (loaderLine) {
+            const msgTimer = setInterval(() => {
+                step++;
+                if (step < messages.length) loaderLine.textContent = messages[step];
+                if (step >= messages.length - 1) clearInterval(msgTimer);
+            }, 420);
+        }
+        if (loaderProgress) {
+            requestAnimationFrame(() => { loaderProgress.style.width = "100%"; });
+        }
+    }
+    runLoaderCosmetics();
 
-/*====================================
-    CRUD PROJECT
-=====================================*/
-const projectModal = document.getElementById("projectModal");
-const addProject = document.getElementById("addProject");
-const closeProject = document.getElementById("closeProject");
-const saveProject = document.getElementById("saveProject");
+    let heroStarted = false;
 
-const projectTitle = document.getElementById("projectTitle");
-const projectDesc = document.getElementById("projectDesc");
-const projectGithub = document.getElementById("projectGithub");
-const projectImage = document.getElementById("projectImage");
+    function hidePreloader() {
+        if (loader && !loader.classList.contains("is-hidden")) {
+            loader.classList.add("is-hidden");
+        }
+        startHeroSequence();
+    }
 
-const projectContainer = document.getElementById("projectContainer");
-let projectList = JSON.parse(localStorage.getItem("projects")) || [];
+    /*=============================
+        HERO — SCRAMBLE TITLE
+    =============================*/
+    const SCRAMBLE_CHARS = "!<>-_/[]{}—=+*^?#$%";
 
-if (addProject) addProject.onclick = () => { projectModal.style.display = "flex"; };
-if (closeProject) closeProject.onclick = () => { projectModal.style.display = "none"; };
-if (projectModal) {
-    window.addEventListener("click", (e) => {
-        if (e.target === projectModal) projectModal.style.display = "none";
-    });
-}
+    function scrambleReveal(el, finalText, opts) {
+        opts = opts || {};
+        const duration = opts.duration || 1300;
+        const onDone = opts.onDone;
 
-if (saveProject) {
-    saveProject.onclick = () => {
-        if (projectTitle.value.trim() === "" || projectDesc.value.trim() === "") {
-            alert("Judul dan deskripsi wajib diisi.");
+        const words = finalText.split(" ");
+        el.innerHTML = "";
+        const charSpans = [];
+
+        words.forEach((word, wi) => {
+            word.split("").forEach((ch) => {
+                const span = document.createElement("span");
+                span.className = "scramble-char";
+                span.textContent = ch;
+                el.appendChild(span);
+                charSpans.push(span);
+            });
+            if (wi < words.length - 1) {
+                const space = document.createElement("span");
+                space.className = "scramble-char is-space";
+                space.innerHTML = "&nbsp;";
+                el.appendChild(space);
+            }
+        });
+
+        if (reduceMotion) {
+            charSpans.forEach((s) => s.classList.add("is-resolved"));
+            if (typeof onDone === "function") onDone();
             return;
         }
-        const file = projectImage.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => tambahProject(e.target.result);
-            reader.readAsDataURL(file);
+
+        const total = charSpans.length;
+        const perCharDelay = duration / (total + 14);
+        const maxIterations = 7;
+
+        charSpans.forEach((span, i) => {
+            const finalChar = span.textContent;
+            let iterations = 0;
+            const startAt = i * perCharDelay;
+
+            setTimeout(() => {
+                const scrambleTimer = setInterval(() => {
+                    span.textContent = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+                    iterations++;
+                    if (iterations >= maxIterations) {
+                        clearInterval(scrambleTimer);
+                        span.textContent = finalChar;
+                        span.classList.add("is-resolved");
+                        if (i === total - 1 && typeof onDone === "function") onDone();
+                    }
+                }, 32);
+            }, startAt);
+        });
+    }
+
+    /*=============================
+        HERO — TYPING ROLE
+    =============================*/
+    function startRoleTyping() {
+        const typingEl = document.getElementById("typingRole");
+        if (!typingEl) return;
+
+        const roles = ["Web Developer", "Fullstack Developer", "UI Designer", "Cyber Security Enthusiast"];
+
+        if (reduceMotion) {
+            typingEl.textContent = roles[0];
+            return;
+        }
+
+        let word = 0, char = 0, deleting = false;
+
+        function tick() {
+            const current = roles[word];
+            if (!deleting) {
+                typingEl.textContent = current.substring(0, char++);
+                if (char > current.length) {
+                    deleting = true;
+                    setTimeout(tick, 1500);
+                    return;
+                }
+            } else {
+                typingEl.textContent = current.substring(0, char--);
+                if (char < 0) {
+                    deleting = false;
+                    word = (word + 1) % roles.length;
+                }
+            }
+            setTimeout(tick, deleting ? 55 : 95);
+        }
+        tick();
+    }
+
+    /*=============================
+        HERO — ORCHESTRATED ENTRANCE
+    =============================*/
+    function startHeroSequence() {
+        if (heroStarted) return;
+        heroStarted = true;
+
+        const titleEl = document.getElementById("scrambleTitle");
+        if (titleEl) {
+            const finalText = titleEl.dataset.text || titleEl.textContent.trim();
+            scrambleReveal(titleEl, finalText, {
+                duration: 1300,
+                onDone: startRoleTyping
+            });
         } else {
-            tambahProject("");
+            startRoleTyping();
         }
-    };
-}
 
-function tambahProject(gambar) {
-    projectList.push({
-        id: Date.now(),
-        title: projectTitle.value,
-        desc: projectDesc.value,
-        github: projectGithub.value,
-        image: gambar
-    });
-    simpanProject();
-}
-
-function simpanProject() {
-    localStorage.setItem("projects", JSON.stringify(projectList));
-    renderProject();
-    resetProjectForm();
-}
-
-function resetProjectForm() {
-    projectTitle.value = "";
-    projectDesc.value = "";
-    projectGithub.value = "";
-    projectImage.value = "";
-    projectModal.style.display = "none";
-}
-
-function hapusProject(id) {
-    if (!confirm("Hapus project ini?")) return;
-    projectList = projectList.filter(item => item.id !== id);
-    localStorage.setItem("projects", JSON.stringify(projectList));
-    renderProject();
-}
-
-function renderProject() {
-    if (!projectContainer) return;
-    projectContainer.innerHTML = "";
-    if (projectList.length === 0) {
-        projectContainer.innerHTML = `<div class="empty-state">$ ls projects/<br>-- direktori kosong --</div>`;
-        return;
-    }
-    projectList.forEach(project => {
-                projectContainer.innerHTML += `
-        <div class="project-card">
-            ${project.image ? `<img src="${project.image}" alt="">` : `<div class="no-image">// tidak ada gambar</div>`}
-            <div class="project-content">
-                <h3>${project.title}</h3>
-                <p>${project.desc}</p>
-                <div class="project-button">
-                    ${project.github ? `<a href="${project.github}" target="_blank" class="btn secondary">Github</a>` : ""}
-                    <button class="btn danger" onclick="hapusProject(${project.id})">Hapus</button>
-                </div>
-            </div>
-        </div>`;
-    });
-    reveal();
-}
-renderProject();
-
-/*====================================
-    CRUD PENGALAMAN PKL
-====================================*/
-const experienceModal = document.getElementById("experienceModal");
-const addExperience = document.getElementById("addExperience");
-const closeExperience = document.getElementById("closeExperience");
-const saveExperience = document.getElementById("saveExperience");
-
-const expCompany = document.getElementById("expCompany");
-const expPosition = document.getElementById("expPosition");
-const expYear = document.getElementById("expYear");
-const expDesc = document.getElementById("expDesc");
-
-const experienceContainer = document.getElementById("experienceContainer");
-let experiences = JSON.parse(localStorage.getItem("experiences")) || [];
-
-if (addExperience) addExperience.onclick = () => { experienceModal.style.display = "flex"; };
-if (closeExperience) closeExperience.onclick = () => { experienceModal.style.display = "none"; };
-if (experienceModal) {
-    window.addEventListener("click", (e) => {
-        if (e.target === experienceModal) experienceModal.style.display = "none";
-    });
-}
-
-if (saveExperience) {
-    saveExperience.onclick = () => {
-        if (expCompany.value.trim() === "" || expPosition.value.trim() === "") {
-            alert("Lengkapi data.");
-            return;
+        if (gsapReady) {
+            gsap.fromTo(".hero-eyebrow", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .6, delay: .1, ease: "power2.out" });
+            gsap.fromTo(".hero-desc", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .8, delay: 1.4, ease: "power3.out" });
+            gsap.fromTo(".hero-actions", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .8, delay: 1.6, ease: "power3.out" });
+            gsap.fromTo(".hero-visual", { opacity: 0, scale: .92, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 1, delay: .9, ease: "power3.out" });
         }
-        experiences.push({
-            id: Date.now(),
-            company: expCompany.value,
-            position: expPosition.value,
-            year: expYear.value,
-            desc: expDesc.value
-        });
-        localStorage.setItem("experiences", JSON.stringify(experiences));
-        renderExperience();
-        experienceModal.style.display = "none";
-        expCompany.value = ""; expPosition.value = ""; expYear.value = ""; expDesc.value = "";
-    };
-}
-
-function deleteExperience(id) {
-    if (!confirm("Hapus pengalaman ini?")) return;
-    experiences = experiences.filter(item => item.id != id);
-    localStorage.setItem("experiences", JSON.stringify(experiences));
-    renderExperience();
-}
-
-function renderExperience() {
-    if (!experienceContainer) return;
-    experienceContainer.innerHTML = "";
-    if (experiences.length === 0) {
-        experienceContainer.innerHTML = `<div class="empty-state">$ cat experience.log<br>-- belum ada entri --</div>`;
-        return;
     }
-    experiences.forEach(item => {
-        experienceContainer.innerHTML += `
-        <div class="timeline-item">
-            <h3>${item.company}</h3>
-            <small>${item.position} | ${item.year}</small>
-            <p>${item.desc}</p>
-            <div class="timeline-actions"><button class="btn danger" onclick="deleteExperience(${item.id})">Hapus</button></div>
-        </div>`;
+
+    // Failsafe: never let the preloader block the site for more than 4.5s
+    window.addEventListener("load", () => setTimeout(hidePreloader, 700));
+    setTimeout(hidePreloader, 4500);
+
+    /*=============================
+        CUSTOM CURSOR (fine pointers only)
+    =============================*/
+    const cursorDot = document.getElementById("cursorDot");
+    const cursorRing = document.getElementById("cursorRing");
+
+    if (isFinePointer && cursorDot && cursorRing) {
+        document.documentElement.classList.add("has-custom-cursor");
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX, ringY = mouseY;
+
+        window.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+        }, { passive: true });
+
+        (function ringLoop() {
+            ringX += (mouseX - ringX) * 0.16;
+            ringY += (mouseY - ringY) * 0.16;
+            cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+            requestAnimationFrame(ringLoop);
+        })();
+
+        document.addEventListener("mousedown", () => cursorDot.classList.add("is-click"));
+        document.addEventListener("mouseup", () => cursorDot.classList.remove("is-click"));
+        document.addEventListener("mouseleave", () => {
+            cursorDot.style.opacity = "0";
+            cursorRing.style.opacity = "0";
+        });
+        document.addEventListener("mouseenter", () => {
+            cursorDot.style.opacity = "";
+            cursorRing.style.opacity = "";
+        });
+
+        document.querySelectorAll('[data-cursor="hover"]').forEach((el) => {
+            el.addEventListener("mouseenter", () => cursorRing.classList.add("is-hover"));
+            el.addEventListener("mouseleave", () => cursorRing.classList.remove("is-hover"));
+        });
+        document.querySelectorAll('[data-cursor="link"]').forEach((el) => {
+            el.addEventListener("mouseenter", () => cursorRing.classList.add("is-link"));
+            el.addEventListener("mouseleave", () => cursorRing.classList.remove("is-link"));
+        });
+    }
+
+    /*=============================
+        MAGNETIC BUTTONS
+    =============================*/
+    if (isFinePointer) {
+        document.querySelectorAll("[data-magnetic]").forEach((btn) => {
+            const strength = 20;
+            btn.addEventListener("mousemove", rafThrottle((e) => {
+                const rect = btn.getBoundingClientRect();
+                const relX = e.clientX - rect.left - rect.width / 2;
+                const relY = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${(relX / rect.width) * strength}px, ${(relY / rect.height) * strength}px)`;
+            }));
+            btn.addEventListener("mouseleave", () => {
+                btn.style.transform = "translate(0, 0)";
+            });
+        });
+    }
+
+    /*=============================
+        BUTTON CLICK RIPPLE
+    =============================*/
+    document.querySelectorAll(".btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement("span");
+            ripple.className = "ripple";
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + "px";
+            ripple.style.left = (e.clientX - rect.left - size / 2) + "px";
+            ripple.style.top = (e.clientY - rect.top - size / 2) + "px";
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 650);
+        });
     });
-    reveal();
-}
-renderExperience();
 
-/*====================================
-    CRUD ORGANISASI
-====================================*/
-const organizationModal = document.getElementById("organizationModal");
-const addOrganization = document.getElementById("addOrganization");
-const closeOrganization = document.getElementById("closeOrganization");
-const saveOrganization = document.getElementById("saveOrganization");
+    /*=============================
+        SPOTLIGHT GLOW (bento cells + contact cards)
+    =============================*/
+    if (isFinePointer) {
+        document.querySelectorAll(".bento-cell, .contact-card").forEach((cell) => {
+            cell.addEventListener("mousemove", rafThrottle((e) => {
+                const rect = cell.getBoundingClientRect();
+                cell.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+                cell.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            }));
+        });
+    }
 
-const orgName = document.getElementById("orgName");
-const orgPosition = document.getElementById("orgPosition");
-const orgYear = document.getElementById("orgYear");
-const orgDesc = document.getElementById("orgDesc");
+    /*=============================
+        3D TILT (project cards)
+    =============================*/
+    if (isFinePointer) {
+        document.querySelectorAll("[data-tilt]").forEach((card) => {
+            const maxTilt = 9;
+            card.addEventListener("mousemove", rafThrottle((e) => {
+                const rect = card.getBoundingClientRect();
+                const px = (e.clientX - rect.left) / rect.width - 0.5;
+                const py = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(900px) rotateX(${(-py * maxTilt).toFixed(2)}deg) rotateY(${(px * maxTilt).toFixed(2)}deg) translateY(-6px)`;
+            }));
+            card.addEventListener("mouseleave", () => {
+                card.style.transform = "";
+            });
+        });
+    }
 
-const organizationContainer = document.getElementById("organizationContainer");
-let organizations = JSON.parse(localStorage.getItem("organizations")) || [];
-
-if (addOrganization) addOrganization.onclick = () => { organizationModal.style.display = "flex"; };
-if (closeOrganization) closeOrganization.onclick = () => { organizationModal.style.display = "none"; };
-if (organizationModal) {
-    window.addEventListener("click", (e) => {
-        if (e.target === organizationModal) organizationModal.style.display = "none";
-    });
-}
-
-if (saveOrganization) {
-    saveOrganization.onclick = () => {
-        if (orgName.value.trim() === "" || orgPosition.value.trim() === "") {
-            alert("Lengkapi data.");
-            return;
+    /*=============================
+        SKILL PROFICIENCY DOTS
+    =============================*/
+    document.querySelectorAll(".skill-dots").forEach((dotsEl) => {
+        const host = dotsEl.closest("[data-level]");
+        const level = host ? parseInt(host.dataset.level, 10) : 0;
+        const filled = Math.max(1, Math.round(level / 20));
+        for (let i = 0; i < 5; i++) {
+            const dot = document.createElement("span");
+            if (i < filled) dot.classList.add("is-filled");
+            dotsEl.appendChild(dot);
         }
-        organizations.push({
-            id: Date.now(),
-            name: orgName.value,
-            position: orgPosition.value,
-            year: orgYear.value,
-            desc: orgDesc.value
-        });
-        localStorage.setItem("organizations", JSON.stringify(organizations));
-        renderOrganization();
-        organizationModal.style.display = "none";
-        orgName.value = ""; orgPosition.value = ""; orgYear.value = ""; orgDesc.value = "";
-    };
-}
+    });
 
-function deleteOrganization(id) {
-    if (!confirm("Hapus organisasi ini?")) return;
-    organizations = organizations.filter(x => x.id != id);
-    localStorage.setItem("organizations", JSON.stringify(organizations));
-    renderOrganization();
-}
+    /*=============================
+        JOURNEY TABS
+    =============================*/
+    const journeyTabs = document.querySelectorAll(".journey-tab");
+    const journeyPanels = document.querySelectorAll(".journey-panel");
+    const journeyIndicator = document.getElementById("journeyIndicator");
 
-function renderOrganization() {
-    if (!organizationContainer) return;
-    organizationContainer.innerHTML = "";
-    if (organizations.length === 0) {
-        organizationContainer.innerHTML = `<div class="empty-state">$ cat organization.log<br>-- belum ada entri --</div>`;
-        return;
+    function moveJourneyIndicator(tabEl) {
+        if (!journeyIndicator || !tabEl) return;
+        journeyIndicator.style.width = tabEl.offsetWidth + "px";
+        journeyIndicator.style.transform = `translateX(${tabEl.offsetLeft - 5}px)`;
     }
-    organizations.forEach(item => {
-        organizationContainer.innerHTML += `
-        <div class="timeline-item">
-            <h3>${item.name}</h3>
-            <small>${item.position} | ${item.year}</small>
-            <p>${item.desc}</p>
-            <div class="timeline-actions"><button class="btn danger" onclick="deleteOrganization(${item.id})">Hapus</button></div>
-        </div>`;
+
+    journeyTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            journeyTabs.forEach((t) => {
+                t.classList.remove("active");
+                t.setAttribute("aria-selected", "false");
+            });
+            tab.classList.add("active");
+            tab.setAttribute("aria-selected", "true");
+            moveJourneyIndicator(tab);
+
+            const target = tab.dataset.tab;
+            journeyPanels.forEach((panel) => {
+                panel.classList.toggle("active", panel.dataset.panel === target);
+            });
+
+            if (gsapReady && !reduceMotion) {
+                const activePanel = document.querySelector(`.journey-panel[data-panel="${target}"]`);
+                if (activePanel) {
+                    gsap.fromTo(activePanel.querySelectorAll(".timeline-item"),
+                        { opacity: 0, y: 16 },
+                        { opacity: 1, y: 0, duration: .5, stagger: .08, ease: "power2.out" });
+                }
+            }
+        });
     });
-    reveal();
-}
-renderOrganization();
 
-/*====================================
-    CRUD PENDIDIKAN
-====================================*/
-const educationModal = document.getElementById("educationModal");
-const addEducation = document.getElementById("addEducation");
-const closeEducation = document.getElementById("closeEducation");
-const saveEducation = document.getElementById("saveEducation");
+    /*=============================
+        SCROLL STATE — navbar / back-to-top / progress bar
+        (kept independent of GSAP so core chrome always works)
+    =============================*/
+    const navbar = document.getElementById("navbar");
+    const topButton = document.getElementById("topButton");
+    const scrollProgress = document.getElementById("scrollProgress");
 
-const eduSchool = document.getElementById("eduSchool");
-const eduMajor = document.getElementById("eduMajor");
-const eduYear = document.getElementById("eduYear");
+    const onScroll = rafThrottle(() => {
+        const y = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
 
-const educationContainer = document.getElementById("educationContainer");
-let educations = JSON.parse(localStorage.getItem("educations")) || [];
-
-if (addEducation) addEducation.onclick = () => { educationModal.style.display = "flex"; };
-if (closeEducation) closeEducation.onclick = () => { educationModal.style.display = "none"; };
-if (educationModal) {
-    window.addEventListener("click", (e) => {
-        if (e.target === educationModal) educationModal.style.display = "none";
+        if (navbar) navbar.classList.toggle("is-scrolled", y > 30);
+        if (topButton) topButton.classList.toggle("is-visible", y > 500);
+        if (scrollProgress) scrollProgress.style.width = pct + "%";
     });
-}
+    window.addEventListener("scroll", onScroll, { passive: true });
 
-if (saveEducation) {
-    saveEducation.onclick = () => {
-        if (eduSchool.value.trim() === "") {
-            alert("Lengkapi data.");
-            return;
+    if (topButton) {
+        topButton.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+        });
+    }
+
+    /*=============================
+        SCROLL-SPY NAVIGATION
+    =============================*/
+    const sections = document.querySelectorAll("main > section[id]");
+    const navLinksAll = document.querySelectorAll(".nav-link, .mobile-menu-links a");
+    const navIndicator = document.getElementById("navIndicator");
+
+    function setActiveNav(id) {
+        if (!id) return;
+        navLinksAll.forEach((link) => link.classList.toggle("active", link.dataset.nav === id));
+        const activeDesktopLink = document.querySelector(`.nav-link[data-nav="${id}"]`);
+        if (navIndicator && activeDesktopLink) {
+            navIndicator.style.width = activeDesktopLink.offsetWidth + "px";
+            navIndicator.style.transform = `translateX(${activeDesktopLink.offsetLeft}px)`;
         }
-        educations.push({
-            id: Date.now(),
-            school: eduSchool.value,
-            major: eduMajor.value,
-            year: eduYear.value
-        });
-        localStorage.setItem("educations", JSON.stringify(educations));
-        renderEducation();
-        educationModal.style.display = "none";
-        eduSchool.value = ""; eduMajor.value = ""; eduYear.value = "";
-    };
-}
-
-function deleteEducation(id) {
-    if (!confirm("Hapus riwayat pendidikan ini?")) return;
-    educations = educations.filter(x => x.id != id);
-    localStorage.setItem("educations", JSON.stringify(educations));
-    renderEducation();
-}
-
-function renderEducation() {
-    if (!educationContainer) return;
-    educationContainer.innerHTML = "";
-    if (educations.length === 0) {
-        educationContainer.innerHTML = `<div class="empty-state">$ cat education.log<br>-- belum ada entri --</div>`;
-        return;
     }
-    educations.forEach(item => {
-        educationContainer.innerHTML += `
-        <div class="timeline-item">
-            <h3>${item.school}</h3>
-            <small>${item.major}</small>
-            <p>${item.year}</p>
-            <div class="timeline-actions"><button class="btn danger" onclick="deleteEducation(${item.id})">Hapus</button></div>
-        </div>`;
+
+    if ("IntersectionObserver" in window && sections.length) {
+        const spy = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) setActiveNav(entry.target.id);
+            });
+        }, { rootMargin: "-40% 0px -50% 0px", threshold: 0 });
+
+        sections.forEach((sec) => spy.observe(sec));
+    }
+
+    navLinksAll.forEach((link) => {
+        link.addEventListener("click", () => setActiveNav(link.dataset.nav));
     });
-    reveal();
-}
-renderEducation();
 
-/*====================================
-    CONTACT (save to localStorage)
-====================================*/
-const saveContact = document.getElementById("saveContact");
-const contactFields = ["email", "whatsapp", "instagram", "github", "linkedin", "address"];
+    /*=============================
+        MOBILE MENU
+    =============================*/
+    const navToggle = document.getElementById("navToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
 
-const savedContact = JSON.parse(localStorage.getItem("contact")) || {};
-contactFields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el && savedContact[id]) el.value = savedContact[id];
-});
+    function closeMobileMenu() {
+        if (navToggle) {
+            navToggle.classList.remove("is-active");
+            navToggle.setAttribute("aria-expanded", "false");
+        }
+        if (mobileMenu) mobileMenu.classList.remove("is-active");
+        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove("is-active");
+        document.body.style.overflow = "";
+    }
 
-if (saveContact) {
-    saveContact.onclick = () => {
-        const data = {};
-        contactFields.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) data[id] = el.value;
+    function openMobileMenu() {
+        if (navToggle) {
+            navToggle.classList.add("is-active");
+            navToggle.setAttribute("aria-expanded", "true");
+        }
+        if (mobileMenu) mobileMenu.classList.add("is-active");
+        if (mobileMenuOverlay) mobileMenuOverlay.classList.add("is-active");
+        document.body.style.overflow = "hidden";
+    }
+
+    if (navToggle) {
+        navToggle.addEventListener("click", () => {
+            navToggle.classList.contains("is-active") ? closeMobileMenu() : openMobileMenu();
         });
-        localStorage.setItem("contact", JSON.stringify(data));
-        alert("Kontak tersimpan.");
-    };
-}
+    }
+    if (mobileMenuOverlay) mobileMenuOverlay.addEventListener("click", closeMobileMenu);
+    document.querySelectorAll(".mobile-menu-links a").forEach((link) => {
+        link.addEventListener("click", closeMobileMenu);
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMobileMenu();
+    });
+
+    /*=============================
+        SCROLL REVEALS (GSAP ScrollTrigger)
+    =============================*/
+    if (gsapReady && window.ScrollTrigger && !reduceMotion) {
+        gsap.utils.toArray(".reveal").forEach((el) => {
+            gsap.fromTo(el,
+                { opacity: 0, y: 46, scale: .97 },
+                {
+                    opacity: 1, y: 0, scale: 1, duration: 1, ease: "power3.out",
+                    scrollTrigger: { trigger: el, start: "top 85%" }
+                });
+        });
+
+        document.querySelectorAll(".stagger-group").forEach((group) => {
+            const items = group.querySelectorAll(".reveal-stagger");
+            if (!items.length) return;
+            gsap.fromTo(items,
+                { opacity: 0, y: 36, scale: .94 },
+                {
+                    opacity: 1, y: 0, scale: 1, duration: .7, stagger: .08, ease: "power3.out",
+                    scrollTrigger: { trigger: group, start: "top 82%" }
+                });
+        });
+
+        gsap.to(".blob-cyan", { y: -70, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
+        gsap.to(".blob-violet", { y: 50, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
+        gsap.to(".blob-magenta", { y: -40, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
+    }
+
+    /*=============================
+        AVATAR (optional local preview — personal to each visitor's browser)
+    =============================*/
+    const profileInput = document.getElementById("profileInput");
+    const profilePreview = document.getElementById("profilePreview");
+    const avatarMonogram = document.getElementById("avatarMonogram");
+    const deleteProfileBtn = document.getElementById("deleteProfile");
+    const PHOTO_KEY = "davin_profile_photo";
+
+    function showAvatarPhoto(src) {
+        if (!profilePreview || !avatarMonogram) return;
+        profilePreview.src = src;
+        profilePreview.hidden = false;
+        avatarMonogram.style.display = "none";
+        if (deleteProfileBtn) deleteProfileBtn.hidden = false;
+    }
+    function showAvatarMonogram() {
+        if (!profilePreview || !avatarMonogram) return;
+        profilePreview.hidden = true;
+        profilePreview.removeAttribute("src");
+        avatarMonogram.style.display = "";
+        if (deleteProfileBtn) deleteProfileBtn.hidden = true;
+    }
+
+    try {
+        const savedPhoto = localStorage.getItem(PHOTO_KEY);
+        if (savedPhoto) showAvatarPhoto(savedPhoto);
+    } catch (err) { /* localStorage unavailable — ignore */ }
+
+    if (profileInput) {
+        profileInput.addEventListener("change", () => {
+            const file = profileInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                showAvatarPhoto(e.target.result);
+                try { localStorage.setItem(PHOTO_KEY, e.target.result); } catch (err) { }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    if (deleteProfileBtn) {
+        deleteProfileBtn.addEventListener("click", () => {
+            showAvatarMonogram();
+            try { localStorage.removeItem(PHOTO_KEY); } catch (err) { }
+        });
+    }
+
+    /*=============================
+        COPY-TO-CLIPBOARD (email contact card)
+    =============================*/
+    const copyToast = document.getElementById("copyToast");
+    document.querySelectorAll("[data-copy]").forEach((el) => {
+        el.addEventListener("click", (e) => {
+            const value = el.dataset.copy;
+            if (!value || !navigator.clipboard) return;
+            e.preventDefault();
+            navigator.clipboard.writeText(value).then(() => {
+                if (copyToast) {
+                    copyToast.textContent = `${value} disalin ke clipboard`;
+                    copyToast.classList.add("is-active");
+                    setTimeout(() => copyToast.classList.remove("is-active"), 2000);
+                }
+            }).catch(() => { window.location.href = el.href; });
+        });
+    });
+
+    /*=============================
+        INIT — runs once DOM is ready
+    =============================*/
+    function init() {
+        onScroll();
+        setActiveNav("home");
+        moveJourneyIndicator(document.querySelector(".journey-tab.active"));
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+
+    window.addEventListener("resize", rafThrottle(() => {
+        const activeNavLink = document.querySelector(".nav-link.active");
+        if (activeNavLink) setActiveNav(activeNavLink.dataset.nav);
+        moveJourneyIndicator(document.querySelector(".journey-tab.active"));
+    }));
+
+})();
