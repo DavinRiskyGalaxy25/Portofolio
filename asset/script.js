@@ -602,19 +602,12 @@
         const maxTilt = 9;
         cards.forEach((card) => {
             card.addEventListener("mousemove", rafThrottle((e) => {
-                // Cards inside a GSAP-driven pinned stack (see
-                // initProjectsStack) already own their transform via
-                // ScrollTrigger scrub — letting the tilt handler also
-                // write to it caused the jumpy/broken look reported in
-                // the Projects section, so it bows out while pinned.
-                if (card.closest(".is-stacking")) return;
                 const rect = card.getBoundingClientRect();
                 const px = (e.clientX - rect.left) / rect.width - 0.5;
                 const py = (e.clientY - rect.top) / rect.height - 0.5;
                 card.style.transform = `perspective(900px) rotateX(${(-py * maxTilt).toFixed(2)}deg) rotateY(${(px * maxTilt).toFixed(2)}deg) translateY(-6px)`;
             }));
             card.addEventListener("mouseleave", () => {
-                if (card.closest(".is-stacking")) return;
                 card.style.transform = "";
             });
         });
@@ -929,51 +922,16 @@
     initHeroScrollFX();
 
     /*=============================
-        PROJECTS — PINNED STACKED CARDS
-        The section locks in place while each project card slides
-        in and settles into a shallow 3D "deck", the next card
-        arriving on top of the last. Requires heavyFXEnabled — on
-        touch/low-end devices the baseline stagger reveal above
-        (data-pin-managed skip) already covers this section instead.
+        PROJECTS — CLEAN STAGGER REVEAL
+        Previously this section used a pinned/scrubbed "stacked deck"
+        animation (initProjectsStack). It was removed: pinning a
+        variable-height card inside a fixed-height stage caused cards
+        to overlap ("numpuk"), the scroll-jack to feel broken, and the
+        section to visually collide with #certificates above it. The
+        baseline .reveal-stagger handler further up now animates these
+        cards in with a simple, reliable fade/slide-up instead — no
+        pinning, no fixed heights, no scroll-jacking.
     =============================*/
-    function initProjectsStack() {
-        if (!gsapReady || !window.ScrollTrigger || reduceMotion || !heavyFXEnabled) return;
-
-        const grid = document.querySelector('.projects-grid[data-pin-managed]');
-        if (!grid) return;
-
-        // Aktifkan class stacking
-        grid.classList.add('is-stacking');
-
-        const cards = gsap.utils.toArray('.projects-grid .project-card');
-
-        // Buat timeline GSAP dengan spacer otomatis agar sertifikat tidak tertutup
-        let tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: '#projects',
-                start: 'top top+=80', // Animasi dimulai saat top section pas di atas layar
-                end: () => `+=${cards.length * 100}%`, // Menyesuaikan jarak scroll
-                pin: true, // Kunci section saat animasi berjalan
-                pinSpacing: true, // PENTING: Mencegah section sertifikat/bawahnya saling menutupi
-                scrub: 1, // Kehalusan gerakan scroll
-                anticipatePin: 1
-            }
-        });
-
-        // Animasi bertumpuk tiap kartu
-        cards.forEach((card, index) => {
-            if (index === 0) return; // Kartu pertama diam di tempat
-
-            tl.fromTo(card, { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, ease: 'none' },
-                index
-            );
-        });
-    }
-    try {
-        initProjectsStack();
-    } catch (err) {
-        console.error("initProjectsStack failed:", err);
-    }
 
     /*=============================
         SKILLS / BENTO — PINNED 3D REVEAL

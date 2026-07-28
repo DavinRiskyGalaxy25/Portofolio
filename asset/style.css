@@ -1639,27 +1639,22 @@ html.has-custom-cursor .cursor-ring {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
+    align-items: stretch;
 }
-
-
-/* PINNED STACKED CARDS MODE — toggled by initProjectsStack() in JS
-   only when heavyFXEnabled. Cards leave the grid flow and layer on
-   top of one another inside a fixed-height stage so the scroll-pin
-   sequence reads as a physical deck of cards with real 3D depth.
-   (Full rule lives further down in section 12, next to the
-   #certificates / #projects stacking-context fix — kept as a single
-   definition to avoid conflicting duplicates.) */
 
 .project-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     border-radius: var(--r-lg);
     background-color: var(--surface);
     border: 1px solid var(--border);
     overflow: hidden;
     transform-style: preserve-3d;
-    transition: border-color .4s var(--ease), box-shadow .4s var(--ease);
+    transition: border-color .4s var(--ease), box-shadow .4s var(--ease), transform .4s var(--ease);
     will-change: transform;
 }
 
@@ -1688,10 +1683,12 @@ html.has-custom-cursor .cursor-ring {
 .project-media {
     position: relative;
     height: 190px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     transform: translateZ(30px);
+    overflow: hidden;
 }
 
 .grad-a {
@@ -1709,6 +1706,11 @@ html.has-custom-cursor .cursor-ring {
 .project-media-icon {
     font-size: 46px;
     color: rgba(255, 255, 255, .18);
+    transition: transform .5s var(--ease);
+}
+
+.project-card:hover .project-media-icon {
+    transform: scale(1.08) rotate(-3deg);
 }
 
 .browser-chrome {
@@ -1717,6 +1719,7 @@ html.has-custom-cursor .cursor-ring {
     left: 16px;
     display: flex;
     gap: 6px;
+    z-index: 2;
 }
 
 .browser-chrome span {
@@ -1729,6 +1732,9 @@ html.has-custom-cursor .cursor-ring {
 .project-body {
     padding: 26px;
     transform: translateZ(20px);
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
 }
 
 .project-body h3 {
@@ -1750,6 +1756,7 @@ html.has-custom-cursor .cursor-ring {
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 22px;
+    margin-top: auto;
 }
 
 .tag {
@@ -2466,35 +2473,7 @@ html.has-custom-cursor .cursor-ring {
     }
 }
 
-#certificates {
-    position: relative;
-    z-index: 10;
-}
-
+#certificates,
 #projects {
     position: relative;
-    z-index: 1;
-}
-
-.projects-grid.is-stacking {
-    display: block;
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    /* Membatasi lebar agar kartu proporsional */
-    height: 520px;
-    /* Tinggi pasti agar tidak kolaps */
-    margin: 0 auto;
-    perspective: 1200px;
-}
-
-.projects-grid.is-stacking .project-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
 }
