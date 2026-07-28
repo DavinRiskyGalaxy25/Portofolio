@@ -1126,28 +1126,103 @@
         everything else (cloning, spacing, speed) adapts on its own.
     =============================*/
     const CERTIFICATES = [{
-            title: "Belajar Dasar Pemrograman Web",
-            issuer: "Dicoding Indonesia",
-            date: "2025",
-            img: "asset/img/cert-placeholder-1.jpg",
-            desc: "Menyelesaikan kelas dasar HTML, CSS, dan JavaScript untuk membangun halaman web statis."
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert1.jpeg",
+            desc: ""
         },
         {
-            title: "Sertifikat Kompetensi RPL",
-            issuer: "LSP SMK Krian 1 Sidoarjo",
-            date: "2025",
-            img: "asset/img/cert-placeholder-2.jpg",
-            desc: "Uji kompetensi keahlian Rekayasa Perangkat Lunak jenjang SMK."
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert2.jpeg",
+            desc: ""
         },
         {
-            title: "Web Developer Intern",
-            issuer: "Universitas Anwar Medika",
-            date: "2026",
-            img: "asset/img/cert-placeholder-3.jpg",
-            desc: "Sertifikat penyelesaian Praktik Kerja Lapangan sebagai Web Developer Intern."
-        }
-        // Tambahkan objek baru di sini untuk menambah sertifikat —
-        // carousel otomatis menyesuaikan jumlah kloningan.
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert3.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert5.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert4.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert6.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert7.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert8.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert9.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert10.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert11.jpeg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert12.jpg",
+            desc: ""
+        },
+        {
+            title: "",
+            issuer: "",
+            date: "",
+            img: "asset/img/Cert13.jpg",
+            desc: ""
+        },
     ];
 
     let certModalOpener = null;
