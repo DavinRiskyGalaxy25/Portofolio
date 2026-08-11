@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Muhammad Davin Nur Ardiyanto | Portfolio</title>
+    <meta name="description" content="Portfolio Muhammad Davin Nur Ardiyanto — siswa Rekayasa Perangkat Lunak dengan minat pada Software Engineering dan Cyber Security.">
+    <meta name="theme-color" content="#07080c">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="asset/style.css">
+</head>
+
+<body>
+
+    <!-- ============ NO-JS FAILSAFE ============ -->
+    <noscript>
+        <style>
+            #loader,
+            .cursor-dot,
+            .cursor-ring,
+            .grain-overlay {
+                display: none !important;
+            }
+
+            .reveal,
+            .reveal-stagger {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        </style>
+    </noscript>
+
+    <!-- ============ PRELOADER ============ -->
+    <div id="loader" aria-hidden="true">
+        <div class="loader-inner">
+            <span class="loader-brand">davin<span class="accent-text">.</span>sci</span>
+            <span class="loader-line" id="loaderLine">booting_system</span>
+            <div class="loader-bar"><span id="loaderProgress"></span></div>
+        </div>
+    </div>
+
+    <!-- ============ CUSTOM CURSOR ============ -->
+    <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+    <!-- ============ AMBIENT LAYERS ============ -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+    <div class="scan-grid" aria-hidden="true"></div>
+
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#home" class="nav-brand" data-cursor="link">
+                <span class="nav-brand-prompt">davin@sci</span><span class="nav-brand-dot">:~$</span>
+            </a>
+
+            <nav class="nav-links" id="navLinks">
+                <span class="nav-indicator" id="navIndicator"></span>
+                <a href="#home" class="nav-link active" data-nav="home" data-cursor="link">Home</a>
+                <a href="#about" class="nav-link" data-nav="about" data-cursor="link">Tentang</a>
+                <a href="#skills" class="nav-link" data-nav="skills" data-cursor="link">Skills</a>
+                <a href="#projects" class="nav-link" data-nav="projects" data-cursor="link">Project</a>
+                <a href="#journey" class="nav-link" data-nav="journey" data-cursor="link">Perjalanan</a>
+                <a href="#contact" class="nav-link" data-nav="contact" data-cursor="link">Kontak</a>
+            </nav>
+
+            <a href="#contact" class="btn btn-primary btn-sm nav-cta" data-magnetic data-cursor="link">
+                <span>Hubungi Saya</span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileMenu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ============ MOBILE MENU ============ -->
+    <div class="mobile-menu" id="mobileMenu">
+        <nav class="mobile-menu-links">
+            <a href="#home" data-nav="home">Home</a>
+            <a href="#about" data-nav="about">Tentang</a>
+            <a href="#skills" data-nav="skills">Skills</a>
+            <a href="#projects" data-nav="projects">Project</a>
+            <a href="#journey" data-nav="journey">Perjalanan</a>
+            <a href="#contact" data-nav="contact">Kontak</a>
+        </nav>
+        <div class="mobile-menu-social">
+            <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+    </div>
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <main>
+
+        <!-- ============================================================
+             HERO
+        ============================================================= -->
+        <section class="hero" id="home">
+            <div class="mesh-bg" aria-hidden="true">
+                <span class="mesh-blob blob-cyan"></span>
+                <span class="mesh-blob blob-violet"></span>
+                <span class="mesh-blob blob-magenta"></span>
+            </div>
+
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <p class="eyebrow hero-eyebrow"><span class="eyebrow-prompt">$</span> whoami</p>
+
+                    <h1 class="hero-title" id="scrambleTitle" data-text="Muhammad Davin Nur Ardiyanto">
+                        <span class="sr-only">Muhammad Davin Nur Ardiyanto</span>
+                    </h1>
+
+                    <h2 class="hero-role">
+                        <span id="typingRole" aria-live="polite"></span><span class="type-caret">&nbsp;</span>
+                    </h2>
+
+                    <p class="hero-desc reveal">
+                        Mungkin bukan yang paling berbakat sejak lahir, tapi saya adalah tipe orang yang akan bekerja paling keras, belajar paling cepat, dan pantang menyerah sampai tujuan tercapai.
+                    </p>
+
+                    <div class="hero-actions reveal">
+                        <!-- Ganti href dengan path file CV asli kamu, lalu unggah PDF-nya ke folder asset/ -->
+                        <a href="asset/cv-davin-nur-ardiyanto.pdf" download class="btn btn-primary" data-magnetic data-cursor="link">
+                            <span><i class="fa-solid fa-download"></i> Download CV</span>
+                        </a>
+                        <a href="#contact" class="btn btn-secondary" data-magnetic data-cursor="link">
+                            <span>Hubungi Saya</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-visual reveal">
+                    <div class="avatar-frame" id="avatarFrame" data-cursor="hover">
+                        <img id="profilePreview" alt="Foto profil Muhammad Davin Nur Ardiyanto" class="avatar-photo" hidden>
+                        <span class="avatar-monogram" id="avatarMonogram">MD</span>
+                        <label class="avatar-upload" for="profileInput" aria-label="Unggah foto profil">
+                            <i class="fa-solid fa-camera"></i>
+                        </label>
+                        <input type="file" id="profileInput" accept="image/*" hidden>
+                        <button type="button" class="avatar-remove" id="deleteProfile" aria-label="Hapus foto profil" hidden>
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="floating-chip chip-1" data-float>
+                        <i class="fa-solid fa-shield-halved"></i><span>Cyber Security</span>
+                    </div>
+                    <div class="floating-chip chip-2" data-float>
+                        <i class="fa-solid fa-code"></i><span>Full-Stack Dev</span>
+                    </div>
+                    <div class="floating-chip chip-3" data-float>
+                        <i class="fa-solid fa-database"></i><span>MySQL</span>
+                    </div>
+                    <div class="status-pill">
+                        <span class="status-dot"></span> terbuka untuk PKL &amp; kolaborasi
+                    </div>
+                </div>
+            </div>
+
+            <a href="#about" class="scroll-hint" data-cursor="link" aria-label="Gulir ke bawah">
+                <span>scroll</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </a>
+        </section>
+
+        <!-- ============================================================
+             ABOUT
+        ============================================================= -->
+        <section class="section" id="about">
+            <div class="section-inner">
+                <div class="section-head reveal">
+                    <p class="eyebrow"><span class="eyebrow-prompt">$</span> cat about.md</p>
+                    <h2 class="section-title">Tentang Saya</h2>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-text reveal">
+                        <p>
+                            Halo, saya <strong>Muhammad Davin Nur Ardiyanto</strong>, seorang siswa Rekayasa Perangkat Lunak yang memiliki ketertarikan pada Sains, Teknologi, dan Filsafat. Saya senang mengeksplorasi bagaimana logika dan teknologi dapat berpadu untuk menciptakan solusi digital yang bermanfaat.
+                        </p>
+                        <p>
+                            Saya menguasai beberapa teknologi pengembangan web seperti HTML, CSS, JavaScript, PHP, dan MySQL, serta memiliki minat pada bidang Cyber Security. Saya senang mempelajari hal baru, mampu bekerja sama dalam tim, dan terus berusaha meningkatkan kemampuan di bidang Sains dan Teknologi.
+                        </p>
+                    </div>
+
+                    <div class="about-chips stagger-group">
+                        <span class="chip reveal-stagger"><i class="fa-solid fa-graduation-cap"></i> Rekayasa Perangkat Lunak</span>
+                        <span class="chip reveal-stagger"><i class="fa-solid fa-shield-halved"></i> Fokus: Cyber Security</span>
+                        <span class="chip reveal-stagger"><i class="fa-solid fa-atom"></i> Sains &middot; Teknologi &middot; Filsafat</span>
+                        <span class="chip reveal-stagger"><i class="fa-solid fa-people-group"></i> Kolaboratif dalam Tim</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SKILLS — BENTO GRID
+        ============================================================= -->
+        <section class="section" id="skills">
+            <div class="section-inner">
+                <div class="section-head reveal">
+                    <p class="eyebrow"><span class="eyebrow-prompt">$</span> cat skills.json</p>
+                    <h2 class="section-title">Keahlian &amp; Fokus</h2>
+                    <p class="section-sub">Teknologi yang saya kuasai, dikelompokkan berdasarkan area fokus.</p>
+                </div>
+
+                <div class="bento-grid stagger-group">
+
+                    <article class="bento-cell bento-cat span-2-2 accent-cyan reveal-stagger">
+                        <div class="bento-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <h3>Languages &amp; Web</h3>
+                        <p>Fondasi utama saya untuk membangun antarmuka dan logika aplikasi dari nol.</p>
+                    </article>
+
+                    <article class="bento-cell skill-cell span-1-1 reveal-stagger" data-level="95">
+                        <i class="fa-brands fa-html5 skill-icon"></i>
+                        <h4>HTML</h4>
+                        <div class="skill-dots"></div>
+                    </article>
+
+                    <article class="bento-cell skill-cell span-1-1 reveal-stagger" data-level="90">
+                        <i class="fa-brands fa-css3-alt skill-icon"></i>
+                        <h4>CSS</h4>
+                        <div class="skill-dots"></div>
+                    </article>
+
+                    <article class="bento-cell skill-cell span-1-1 reveal-stagger" data-level="85">
+                        <i class="fa-brands fa-js skill-icon"></i>
+                        <h4>JavaScript</h4>
+                        <div class="skill-dots"></div>
+                    </article>
+
+                    <article class="bento-cell skill-cell span-1-1 reveal-stagger" data-level="85">
+                        <i class="fa-brands fa-php skill-icon"></i>
+                        <h4>PHP</h4>
+                        <div class="skill-dots"></div>
+                    </article>
+
+                    <article class="bento-cell bento-cat span-2-1 accent-violet reveal-stagger">
+                        <div class="bento-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                        <h3>Software Engineering</h3>
+                        <p>Cara saya berpikir dan bekerja saat membangun solusi digital.</p>
+                    </article>
+
+                    <article class="bento-cell skill-cell span-1-1 reveal-stagger" data-level="90">
+                        <i class="fa-solid fa-database skill-icon"></i>
+                        <h4>MySQL</h4>
+                        <div class="skill-dots"></div>
+                    </article>
+
+                    <article class="bento-cell trait-cell span-1-1 reveal-stagger">
+                        <i class="fa-solid fa-people-arrows skill-icon"></i>
+                        <h4>Kolaborasi Tim</h4>
+                    </article>
+
+                    <article class="bento-cell trait-cell span-1-1 reveal-stagger">
+                        <i class="fa-solid fa-bolt skill-icon"></i>
+                        <h4>Belajar Cepat</h4>
+                    </article>
+
+                    <article class="bento-cell bento-cat span-2-2 accent-magenta reveal-stagger">
+                        <div class="bento-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3>Cyber Security</h3>
+                        <p>Minat yang terus saya dalami — memahami sisi pertahanan dari setiap sistem yang saya bangun.</p>
+                        <div class="skill-cat-level" data-level="50">
+                            <div class="skill-dots"></div>
+                            <span class="skill-cat-note">growing focus</span>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             PROJECTS
+        ============================================================= -->
+        <section class="section" id="projects">
+            <div class="section-inner">
+                <div class="section-head reveal">
+                    <p class="eyebrow"><span class="eyebrow-prompt">$</span> ls ~/projects</p>
+                    <h2 class="section-title">Project Terpilih</h2>
+                    <p class="section-sub">Beberapa hal yang pernah saya bangun.</p>
+                </div>
+
+                <!--
+                    3 kartu di bawah ini adalah CONTOH — tandai "Contoh" akan tampil kecil di pojok kartu.
+                    Ganti judul, deskripsi, tag, dan link (href="#") dengan project asli kamu.
+                    Untuk menambah project baru, salin satu blok <article class="project-card">...</article>.
+                -->
+                <div class="projects-grid stagger-group">
+
+                    <article class="project-card reveal-stagger" data-tilt data-cursor="hover">
+                        <span class="example-badge">Contoh</span>
+                        <div class="project-media grad-a">
+                            <div class="browser-chrome"><span></span><span></span><span></span></div>
+                            <i class="fa-solid fa-book-open project-media-icon"></i>
+                        </div>
+                        <div class="project-body">
+                            <h3>Sistem Informasi Perpustakaan Sekolah</h3>
+                            <p>Aplikasi manajemen peminjaman buku berbasis web, lengkap dengan pencarian katalog dan riwayat peminjaman anggota.</p>
+                            <div class="project-tags">
+                                <span class="tag">PHP</span>
+                                <span class="tag">MySQL</span>
+                                <span class="tag">HTML</span>
+                                <span class="tag">CSS</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="link-btn" data-cursor="link"><i class="fa-brands fa-github"></i> Kode</a>
+                                <a href="#" class="link-btn" data-cursor="link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Demo</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="project-card reveal-stagger" data-tilt data-cursor="hover">
+                        <span class="example-badge">Contoh</span>
+                        <div class="project-media grad-b">
+                            <div class="browser-chrome"><span></span><span></span><span></span></div>
+                            <i class="fa-solid fa-shop project-media-icon"></i>
+                        </div>
+                        <div class="project-body">
+                            <h3>Company Profile Responsive</h3>
+                            <p>Website profil perusahaan dengan animasi scroll ringan, dioptimalkan agar tetap rapi di mobile, tablet, dan desktop.</p>
+                            <div class="project-tags">
+                                <span class="tag">HTML</span>
+                                <span class="tag">CSS</span>
+                                <span class="tag">JavaScript</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="link-btn" data-cursor="link"><i class="fa-brands fa-github"></i> Kode</a>
+                                <a href="#" class="link-btn" data-cursor="link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Demo</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="project-card reveal-stagger" data-tilt data-cursor="hover">
+                        <span class="example-badge">Contoh</span>
+                        <div class="project-media grad-c">
+                            <div class="browser-chrome"><span></span><span></span><span></span></div>
+                            <i class="fa-solid fa-shield-halved project-media-icon"></i>
+                        </div>
+                        <div class="project-body">
+                            <h3>Analisis Keamanan Website Dasar</h3>
+                            <p>Tools sederhana untuk memeriksa header keamanan dan celah konfigurasi umum pada sebuah website.</p>
+                            <div class="project-tags">
+                                <span class="tag">PHP</span>
+                                <span class="tag">JavaScript</span>
+                                <span class="tag">Cyber Security</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="link-btn" data-cursor="link"><i class="fa-brands fa-github"></i> Kode</a>
+                                <a href="#" class="link-btn" data-cursor="link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Demo</a>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             JOURNEY — PKL / ORGANISASI / PENDIDIKAN (tabbed)
+        ============================================================= -->
+        <section class="section" id="journey">
+            <div class="section-inner">
+                <div class="section-head reveal">
+                    <p class="eyebrow"><span class="eyebrow-prompt">$</span> cat journey.log</p>
+                    <h2 class="section-title">Perjalanan</h2>
+                    <p class="section-sub">Pengalaman PKL, organisasi, dan riwayat pendidikan.</p>
+                </div>
+
+                <div class="journey-tabs" role="tablist" aria-label="Kategori perjalanan">
+                    <span class="journey-tab-indicator" id="journeyIndicator"></span>
+                    <button class="journey-tab active" data-tab="pkl" role="tab" aria-selected="true">PKL</button>
+                    <button class="journey-tab" data-tab="organisasi" role="tab" aria-selected="false">Organisasi</button>
+                    <button class="journey-tab" data-tab="pendidikan" role="tab" aria-selected="false">Pendidikan</button>
+                </div>
+
+                <!-- Untuk menambah entri baru, salin satu blok <div class="timeline-item">...</div> pada panel terkait -->
+                <div class="journey-panels">
+
+                    <div class="journey-panel active" data-panel="pkl">
+                        <div class="timeline stagger-group">
+                            <div class="timeline-item reveal-stagger">
+                                <span class="example-badge">Contoh</span>
+                                <h3>PT Contoh Teknologi Indonesia</h3>
+                                <small>Web Developer Intern &middot; 2025</small>
+                                <p>Membantu tim pengembangan membangun dan memelihara fitur pada aplikasi internal berbasis web menggunakan PHP dan MySQL.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="journey-panel" data-panel="organisasi">
+                        <div class="timeline stagger-group">
+                            <div class="timeline-item reveal-stagger">
+                                <span class="example-badge">Contoh</span>
+                                <h3>Ekstrakurikuler Informatika</h3>
+                                <small>Anggota Divisi IT &middot; 2024 - 2025</small>
+                                <p>Terlibat dalam pengelolaan website sekolah dan berbagi pengetahuan seputar pemrograman dasar kepada anggota lain.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="journey-panel" data-panel="pendidikan">
+                        <div class="timeline stagger-group">
+                            <div class="timeline-item reveal-stagger">
+                                <span class="example-badge">Contoh</span>
+                                <h3>SMK — Rekayasa Perangkat Lunak</h3>
+                                <small>2023 - Sekarang</small>
+                                <p>Menempuh pendidikan pada kompetensi keahlian Rekayasa Perangkat Lunak.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             CONTACT
+        ============================================================= -->
+        <section class="section" id="contact">
+            <div class="section-inner">
+                <div class="section-head reveal">
+                    <p class="eyebrow"><span class="eyebrow-prompt">$</span> ./contact.sh</p>
+                    <h2 class="section-title">Mari Terhubung</h2>
+                    <p class="section-sub">Terbuka untuk kolaborasi, project PKL, atau sekadar diskusi seputar teknologi.</p>
+                </div>
+
+                <!-- Ganti setiap value di bawah (email, nomor, username) dengan data asli kamu -->
+                <div class="contact-grid stagger-group">
+                    <a href="mailto:davin@example.com" class="contact-card reveal-stagger" data-copy="davin@example.com" data-cursor="hover">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span class="contact-label">Email</span>
+                        <span class="contact-value">davin@example.com</span>
+                    </a>
+                    <a href="https://wa.me/62812345678" target="_blank" rel="noopener" class="contact-card reveal-stagger" data-cursor="hover">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span class="contact-label">WhatsApp</span>
+                        <span class="contact-value">+62 812-3456-78</span>
+                    </a>
+                    <a href="https://github.com/" target="_blank" rel="noopener" class="contact-card reveal-stagger" data-cursor="hover">
+                        <i class="fa-brands fa-github"></i>
+                        <span class="contact-label">GitHub</span>
+                        <span class="contact-value">github.com/username</span>
+                    </a>
+                    <a href="https://linkedin.com/" target="_blank" rel="noopener" class="contact-card reveal-stagger" data-cursor="hover">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                        <span class="contact-label">LinkedIn</span>
+                        <span class="contact-value">linkedin.com/in/username</span>
+                    </a>
+                    <a href="https://instagram.com/" target="_blank" rel="noopener" class="contact-card reveal-stagger" data-cursor="hover">
+                        <i class="fa-brands fa-instagram"></i>
+                        <span class="contact-label">Instagram</span>
+                        <span class="contact-value">@username</span>
+                    </a>
+                    <div class="contact-card reveal-stagger">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span class="contact-label">Lokasi</span>
+                        <span class="contact-value">Indonesia</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>&copy; 2026 Davin Scientist. All rights reserved.</span>
+            <div class="footer-social">
+                <a href="#" aria-label="GitHub" data-cursor="link"><i class="fa-brands fa-github"></i></a>
+                <a href="#" aria-label="Instagram" data-cursor="link"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn" data-cursor="link"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" aria-label="WhatsApp" data-cursor="link"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <button id="topButton" aria-label="Kembali ke atas" data-cursor="link"><i class="fa-solid fa-arrow-up"></i></button>
+    <div class="copy-toast" id="copyToast">Email disalin</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/ScrollTrigger.min.js"></script>
+    <script src="asset/script.js"></script>
+</body>
+
+</html>
