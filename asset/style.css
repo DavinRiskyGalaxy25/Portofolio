@@ -1352,12 +1352,8 @@ html.has-custom-cursor .cursor-ring {
 }
 
 @media (max-width: 768px) {
-    .skills-path {
-        left: 24px;
-    }
-    .skills-star {
-        left: 24px;
-    }
+    .skills-path { left: 24px; }
+    .skills-star { left: 24px; }
     .skill-stop {
         left: 60px !important;
         right: auto !important;
@@ -2166,6 +2162,7 @@ html.has-custom-cursor .cursor-ring {
         font-size: 12.5px;
     }
 }
+
 
 #certificates,
 #projects {
