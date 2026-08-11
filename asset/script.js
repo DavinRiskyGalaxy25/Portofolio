@@ -558,7 +558,7 @@
         3D-glass look reads consistently across the page.
     =============================*/
     if (isFinePointer) {
-        document.querySelectorAll(".bento-cell, .contact-card, .project-card, .cert-card").forEach((cell) => {
+        document.querySelectorAll(".contact-card, .project-card, .cert-card").forEach((cell) => {
             cell.addEventListener("mousemove", rafThrottle((e) => {
                 const rect = cell.getBoundingClientRect();
                 cell.style.setProperty("--mx", `${e.clientX - rect.left}px`);
@@ -590,7 +590,6 @@
         });
     }
     attachFocusGroup(document.querySelector(".projects-grid"), ".project-card");
-    attachFocusGroup(document.querySelector(".bento-grid"), ".bento-cell");
 
     /*=============================
         3D TILT EFFECT
@@ -872,7 +871,7 @@
         });
 
         document.querySelectorAll(".stagger-group").forEach((group) => {
-            const isPinManaged = group.hasAttribute("data-pin-managed") || group.classList.contains("bento-grid");
+            const isPinManaged = group.hasAttribute("data-pin-managed");
             if (isPinManaged && heavyFXEnabled) return;
             const items = group.querySelectorAll(".reveal-stagger");
             if (!items.length) return;
@@ -934,49 +933,65 @@
     =============================*/
 
     /*=============================
-        SKILLS / BENTO — PINNED 3D REVEAL
-        Section pins briefly while each bento cell flies in from
-        depth with a slight rotation, staggered left-to-right.
-        Same heavyFXEnabled gate/fallback pattern as the projects
-        stack above.
+        SKILLS — SCROLL-PINNED STAR TRACK
+        Section is pinned while a star travels down a central line;
+        each .skill-stop lights up as the star passes it, in sync
+        with scroll progress. Falls back to showing all stops
+        statically (no pin) when GSAP/ScrollTrigger is unavailable
+        or reduced motion is on, so the content stays accessible.
     =============================*/
-    function initBentoReveal() {
-        if (!gsapReady || !window.ScrollTrigger || reduceMotion || !heavyFXEnabled) return;
+    function initSkillsStarPin() {
+        const track = document.getElementById("skillsTrack");
+        const star = document.getElementById("skillsStar");
+        const path = track ? track.querySelector(".skills-path") : null;
+        const stops = track ? Array.from(track.querySelectorAll(".skill-stop")) : [];
+        if (!track || !star || !path || !stops.length) return;
 
-        const section = document.getElementById("skills");
-        const cells = section ? Array.from(section.querySelectorAll(".bento-cell")) : [];
-        if (!section || !cells.length) return;
-
-        gsap.set(cells, {
-            opacity: 0,
-            z: -160,
-            rotateX: -18,
-            transformPerspective: 900,
-            transformOrigin: "50% 100%"
-        });
+        if (!gsapReady || !window.ScrollTrigger || reduceMotion) {
+            stops.forEach((el) => el.classList.add("is-active"));
+            return;
+        }
 
         const navH = navbar ? navbar.offsetHeight : 0;
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: section,
-                start: "top top+=" + navH,
-                end: "+=" + Math.min(cells.length * 130, 1300),
-                pin: true,
-                scrub: 1,
-                anticipatePin: 1
+        const travel = () => Math.max(path.offsetHeight - star.offsetHeight, 0);
+
+        // Place each stop's text at the same height the star reaches
+        // when it's that stop's turn, so the text "turun" step by step
+        // together with the star instead of all stacking at one spot.
+        const positionStops = rafThrottle(() => {
+            const travelPx = travel();
+            const baseTop = path.offsetTop + star.offsetHeight / 2;
+            stops.forEach((el, i) => {
+                const frac = stops.length > 1 ? i / (stops.length - 1) : 0;
+                el.style.top = (baseTop + frac * travelPx) + "px";
+            });
+        });
+        positionStops();
+        window.addEventListener("resize", positionStops);
+
+        ScrollTrigger.create({
+            trigger: track,
+            start: "top top+=" + navH,
+            end: "+=" + Math.min(stops.length * 500, 3000),
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+            onRefresh: positionStops,
+            onUpdate: (self) => {
+                const progress = self.progress;
+                gsap.set(star, { y: progress * travel() });
+
+                const activeIndex = Math.min(
+                    stops.length - 1,
+                    Math.floor(progress * stops.length)
+                );
+                stops.forEach((el, i) => {
+                    el.classList.toggle("is-active", i === activeIndex);
+                });
             }
         });
-
-        tl.to(cells, {
-            opacity: 1,
-            z: 0,
-            rotateX: 0,
-            duration: 1,
-            stagger: { each: 0.12, from: "start" },
-            ease: "power2.out"
-        });
     }
-    initBentoReveal();
+    initSkillsStarPin();
 
     /*=============================
         AVATAR PREVIEW
@@ -1114,7 +1129,7 @@
 
     // hover_click SFX: attached broadly to clickable UI — soft/subtle
     // sound suggested in SFX_MANIFEST above.
-    document.querySelectorAll(".btn, .nav-link, .project-card, .contact-card, .link-btn, .bento-cell, .cert-card").forEach((el) => {
+    document.querySelectorAll(".btn, .nav-link, .project-card, .contact-card, .link-btn, .skill-stop, .cert-card").forEach((el) => {
         el.addEventListener("mouseenter", () => playSFX("hover_click"));
     });
 
